@@ -5,24 +5,48 @@
     <title>Pixel Impact agence de marketing</title>
     <meta name="description" content="Agence de marketing digital au Burkina Faso.Publicite, réseaux sociaux, Creation de site web et strategie digital">
     <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+
 
 </head>
 <body>
     <!--BARRE DE NAVIGATION-->
     <header class="header">
         <nav class="navbar container">
-            <a href="#accueil" class="logo">
-                PIXEL<span>IMPACT</span>
+            
+<nav class="navbar container">
 
-            </a>
-            <ul class="nav-link">
-                <li><a href="#acceuil">Accueil</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="apropos">A propos</a></li>
-                <li><a href="#realisations">Réalisations</a></li>
+    <a href="#accueil" class="logo">
+        PIXEL<span>IMPACT</span>
+    </a>
 
-            </ul>
-            <a href="#contact" class="btn btn-nav">Parlons de votre projet</a>
+    <button
+        class="menu-toggle"
+        id="menu-toggle"
+        type="button"
+        aria-label="Ouvrir le menu"
+        aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <ul class="nav-links" id="nav-links">
+        <li><a href="#accueil">Accueil</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#apropos">À propos</a></li>
+        <li><a href="#realisations">Réalisations</a></li>
+        <li class="mobile-contact">
+            <a href="#contact">Contactez-nous ↗</a>
+        </li>
+    </ul>
+
+    <a href="#contact" class="btn btn-nav desktop-contact">
+        Parlons de votre projet ↗
+    </a>
+
+</nav>
+
 
         </nav>
     </header>
