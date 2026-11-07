@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>Titan Gel Gold – Motion 3D</title>
+<style>
+@font-face{font-family:Anton;src:url(lib/anton-latin-400-normal.woff2)}
+@font-face{font-family:Mont;font-weight:500;src:url(lib/montserrat-latin-500-normal.woff2)}
+@font-face{font-family:Mont;font-weight:700;src:url(lib/montserrat-latin-700-normal.woff2)}
+@font-face{font-family:Mont;font-weight:800;src:url(lib/montserrat-latin-800-normal.woff2)}
+@font-face{font-family:Mont;font-weight:900;src:url(lib/montserrat-latin-900-normal.woff2)}
+@font-face{font-family:Vibes;src:url(lib/great-vibes-latin-400-normal.woff2)}
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#100003}
+#cam{position:absolute;inset:0;transform-origin:50% 50%}
+.L{position:absolute;inset:0}
+.bg{position:absolute;inset:0;opacity:0}
+canvas{position:absolute;left:0;top:0}
+#gl{z-index:5;width:1080px;height:1920px}
+#back{z-index:4}#front{z-index:8}
+#ui{z-index:10}
+.e{position:absolute;left:540px;top:960px;white-space:nowrap;opacity:0;will-change:transform}
+.an{font-family:Anton;color:#f6f3ee;line-height:.92;letter-spacing:2px}
+.mo{font-family:Mont}
+.gold{padding-top:.1em;background:linear-gradient(180deg,#fff2c4 0%,#f3cf6e 30%,#c8952e 55%,#f7dc8a 75%,#a8741d 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ext{text-shadow:0 3px 0 #c9c4bd,0 6px 0 #a39d96,0 9px 0 #7d7771,0 12px 0 #5b5550,0 22px 30px rgba(0,0,0,.65)}
+.m{overflow:hidden;padding:34px 20px 6px}
+.m>span{display:block;padding-top:.14em}
+.pill{border-radius:60px;padding:22px 54px;background:linear-gradient(180deg,#f9e4a0,#d8a94a 50%,#b07d22);color:#2a0b02;font-family:Mont;font-weight:900;box-shadow:0 10px 40px rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.6)}
+.card{width:860px;height:200px;border-radius:40px;background:rgba(20,4,6,.82);border:3px solid rgba(240,200,110,.55);box-shadow:0 20px 50px rgba(0,0,0,.45);display:flex;align-items:center;gap:40px;padding:0 50px;box-sizing:border-box}
+.ic{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe39a,#d29a35 60%,#8d5b12);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:inset 0 -6px 12px rgba(0,0,0,.25)}
+.card b{font-family:Mont;font-weight:900;font-size:62px;color:#fff;letter-spacing:1px}
+.price{display:flex;align-items:baseline;gap:26px;padding:20px 70px 26px;border-radius:34px;background:linear-gradient(180deg,#ff3b3b,#c50d1a 55%,#860611);border:6px solid #f2c45e;box-shadow:0 0 0 6px rgba(0,0,0,.35),0 25px 60px rgba(0,0,0,.55),inset 0 4px 0 rgba(255,255,255,.35);transform-origin:50% 50%}
+.wa{display:flex;align-items:center;gap:28px;padding:22px 50px 22px 26px;border-radius:80px;background:#0f0f10;border:4px solid #25d366;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.wa i{width:96px;height:96px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center}
+.wa b{font-family:Anton;font-size:84px;color:#fff;letter-spacing:2px;font-weight:400}
+.wa small{display:block;font-family:Mont;font-weight:700;font-size:30px;color:#25d366;letter-spacing:3px;margin-bottom:2px}
+.btn{padding:30px 56px;border-radius:30px;background:linear-gradient(180deg,#ff3a3a,#c40c18);border:5px solid #f2c45e;font-family:Mont;font-weight:900;font-size:48px;color:#fff;letter-spacing:1px;box-shadow:0 14px 0 #6d0410,0 30px 60px rgba(0,0,0,.5);display:flex;align-items:center;gap:26px}
+#grain{z-index:30;pointer-events:none;mix-blend-mode:overlay;opacity:.12;background-size:540px 960px}
+#vig{z-index:29;background:radial-gradient(ellipse at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%)}
+#flash{z-index:31;background:radial-gradient(circle at 50% 50%,#fff6dc,#ffd27a 50%,#ff9a3a);opacity:0;mix-blend-mode:screen}
+.strip{position:absolute;right:0;top:0;bottom:0;width:330px;background:#f6efe4}
+.si{position:absolute;left:925px;width:300px;text-align:center;opacity:0}
+.si .c{width:118px;height:118px;border-radius:50%;margin:0 auto 14px;background:#a30d22;display:flex;align-items:center;justify-content:center}
+.si b{font-family:Mont;font-weight:800;font-size:30px;color:#5a0612;line-height:1.15;display:block}
+</style>
+<script type="importmap">{"imports":{"three":"./lib/three.module.js"}}</script>
+</head><body>
+<div id="stage"><div id="cam">
+  <!-- backgrounds -->
+  <div class="bg" id="bgA" style="background:radial-gradient(ellipse at 50% 42%,#e3192f 0%,#a10818 38%,#3a0008 80%,#1a0003 100%)"></div>
+  <div class="bg" id="rays" style="background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,214,140,.13) 0deg 5deg,transparent 5deg 15deg);-webkit-mask:radial-gradient(circle at 50% 50%,#000 0%,transparent 70%);mask:radial-gradient(circle at 50% 50%,#000 0%,transparent 70%);transform-origin:50% 50%"></div>
+  <div class="bg" id="bgB"><div class="L" style="background:linear-gradient(160deg,#e01a2e,#9c0716 60%,#5a030c)"></div><div class="L" id="bBand" style="left:auto;width:380px;background:linear-gradient(180deg,#24191b,#141012)"></div></div>
+  <div class="bg" id="bgC" style="background:radial-gradient(ellipse 60% 45% at 50% 40%,#4a0a10 0%,#1d0306 55%,#050102 100%)"></div>
+  <div class="bg" id="bgD" style="background:#1a0306"><div class="L" id="smk" style="filter:blur(60px)"></div></div>
+  <div class="bg" id="bgE"><div class="L" style="background:#efb02a"></div><div class="L" id="eRed" style="background:linear-gradient(170deg,#d9162b,#8e0614)"></div></div>
+  <div class="bg" id="bgF1" style="background:radial-gradient(circle at 50% 50%,#3d0509 0%,#0c0102 75%)"></div>
+  <div class="bg" id="bgF2" style="background:radial-gradient(ellipse at 50% 38%,#ff2a3a 0%,#b40a19 40%,#4a020a 85%)"></div>
+  <div class="bg" id="bgG" style="background:linear-gradient(180deg,#2a0207,#5c0410 50%,#2a0207)"><svg id="road" class="L" width="1080" height="1920"></svg></div>
+  <div class="bg" id="bgH" style="background:radial-gradient(ellipse at 50% 40%,#c3101f 0%,#6c0410 55%,#140103 100%)"></div>
+  <div class="bg" id="bgI" style="background:radial-gradient(ellipse at 35% 45%,#a5122a 0%,#7a0a1d 50%,#4a0410 100%)"><svg class="strip" id="zz" width="330" height="1920" style="background:none"></svg></div>
+
+  <canvas id="back" width="1080" height="1920"></canvas>
+  <canvas id="gl" width="1080" height="1920"></canvas>
+  <canvas id="front" width="1080" height="1920"></canvas>
+
+  <div class="L" id="ui">
+    <!-- A -->
+    <div class="e" id="aScript" style="top:210px;font-family:Vibes;font-size:150px;color:#f4c869;text-shadow:0 6px 18px rgba(0,0,0,.5)">Tu veux avoir un</div>
+    <div class="e an ext" id="aGros" style="top:470px;font-size:330px">GROS</div>
+    <div class="e an ext" id="aBang" style="top:790px;font-size:250px">BANGALA</div>
+    <!-- B -->
+    <div class="e mo" id="bLine1" style="top:1440px;font-weight:800;font-size:56px;color:#fff;letter-spacing:6px">PRENDS SOIN DE TON</div>
+    <div class="e m" id="bInt" style="top:1600px"><span class="an gold" style="font-size:210px">INTIMITÉ</span></div>
+    <div class="e mo" id="bLine2" style="top:1440px;font-weight:800;font-size:56px;color:#fff;letter-spacing:6px">ET GAGNE EN</div>
+    <div class="e m" id="bConf" style="top:1600px"><span class="an gold" style="font-size:210px">CONFIANCE</span></div>
+    <!-- C -->
+    <div class="e mo" id="cDisc" style="top:200px;font-weight:700;font-size:58px;color:#f3cf6e;letter-spacing:22px">DÉCOUVRE</div>
+    <div class="e mo" id="cT1" style="top:1500px;font-weight:500;font-size:132px;color:#f4f1ec;letter-spacing:14px">TITAN GEL</div>
+    <div class="e mo gold" id="cT2" style="top:1660px;font-weight:700;font-size:96px;letter-spacing:30px">• GOLD •</div>
+    <!-- D -->
+    <div class="e pill" id="dPill" style="top:250px;font-size:54px;letter-spacing:3px">GEL INTIME MASCULIN</div>
+    <div class="e m" id="dL1" style="top:1500px"><span class="mo" style="font-weight:800;font-size:60px;color:#fff;letter-spacing:4px">CONÇU POUR ACCOMPAGNER</span></div>
+    <div class="e m" id="dL2" style="top:1600px"><span class="an gold" style="font-size:150px">TON INTIMITÉ</span></div>
+    <div class="e m" id="dL3" style="top:1500px"><span class="mo" style="font-weight:800;font-size:60px;color:#fff;letter-spacing:4px">ET AMÉLIORER</span></div>
+    <div class="e m" id="dL4" style="top:1610px"><span class="an gold" style="font-size:150px">TES SENSATIONS</span></div>
+    <!-- E -->
+    <div class="e card" id="eC1" style="top:880px"><div class="ic"><svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#3a1202" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></div><b>FACILE À UTILISER</b></div>
+    <div class="e card" id="eC2" style="top:1130px"><div class="ic"><svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#3a1202" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 4 6 7.2 6 10.5a6 6 0 0 1-12 0C6 10.2 9 7 12 3z"/></svg></div><b>PRATIQUE</b></div>
+    <div class="e card" id="eC3" style="top:1380px"><div class="ic"><svg width="74" height="74" viewBox="0 0 24 24" fill="none" stroke="#3a1202" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="14" r="6"/><path d="M14.5 9.5L20 4M15 4h5v5"/></svg></div><b>PENSÉ POUR LES HOMMES</b></div>
+    <!-- F -->
+    <div class="e an" id="fEt" style="top:720px;font-size:150px;color:#fff;letter-spacing:6px">ET DEVINE</div>
+    <div class="e an gold" id="fQuoi" style="top:930px;font-size:260px">QUOI ?</div>
+    <div class="e mo" id="fDisp" style="top:1260px;font-weight:800;font-size:54px;color:#fff;letter-spacing:5px">DISPONIBLE À SEULEMENT</div>
+    <div class="e price" id="fPrice" style="top:1450px"><span class="an" style="font-size:250px;color:#fff;text-shadow:0 8px 0 #7a0410">5 000</span><span class="an gold" style="font-size:130px">FCFA</span></div>
+    <!-- G -->
+    <div class="e" id="gTruck" style="top:860px"><svg width="520" height="300" viewBox="0 0 260 150"><g fill="none" stroke-linejoin="round"><rect x="8" y="22" width="150" height="88" rx="8" fill="#f2c45e"/><path d="M158 48h46l34 34v28h-80z" fill="#fff"/><path d="M168 56h32l22 24h-54z" fill="#2a0207"/><rect x="8" y="104" width="230" height="10" rx="4" fill="#cfc6bb"/><circle cx="52" cy="118" r="17" fill="#141012" stroke="#fff" stroke-width="5"/><circle cx="200" cy="118" r="17" fill="#141012" stroke="#fff" stroke-width="5"/></g><text x="83" y="76" text-anchor="middle" font-family="Anton" font-size="30" fill="#5a0612" letter-spacing="1">TITAN GEL</text></svg></div>
+    <div class="e mo" id="gL1" style="top:300px;font-weight:800;font-size:62px;color:#fff;letter-spacing:5px">LIVRAISON &amp; EXPÉDITION</div>
+    <div class="e m" id="gL2" style="top:1290px"><span class="mo" style="font-weight:800;font-size:66px;color:#fff;letter-spacing:8px">PARTOUT AU</span></div>
+    <div class="e m" id="gL3" style="top:1440px"><span class="an gold" style="font-size:190px">BURKINA FASO</span></div>
+    <div class="e" id="gFlag" style="top:1610px"><svg width="300" height="40" viewBox="0 0 300 40"><rect width="300" height="20" fill="#ef2b2d"/><rect y="20" width="300" height="20" fill="#009e49"/><path d="M150 8l3.5 10.7h11.3l-9.1 6.6 3.5 10.7-9.2-6.6-9.2 6.6 3.5-10.7-9.1-6.6h11.3z" fill="#fcd116"/></svg></div>
+    <div class="e mo" id="gFrais" style="top:1720px;font-weight:700;font-size:40px;color:#f3cf6e;letter-spacing:6px">À VOS FRAIS</div>
+    <!-- H -->
+    <div class="e an" id="hNe" style="top:250px;font-size:120px;color:#fff;letter-spacing:3px">NE PASSE PAS À CÔTÉ !</div>
+    <div class="e an gold" id="hCmd" style="top:250px;font-size:170px;letter-spacing:6px">COMMANDE</div>
+    <div class="e btn" id="hBtn" style="top:1440px"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.3a2 2 0 0 0 2 1.7h8.2a2 2 0 0 0 2-1.6L21.5 8H6"/></svg>COMMANDER MAINTENANT</div>
+    <div class="e" id="hTap" style="top:1460px;left:760px;width:140px;height:140px;border-radius:50%;border:6px solid #fff"></div>
+    <div class="e wa" id="hWa" style="top:1690px"><i><svg width="60" height="60" viewBox="0 0 24 24"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5z" fill="#fff"/><path d="M8.6 7.2c.3-.4.7-.4 1-.1l1.2 1.9c.2.3.1.6-.1.9l-.6.7c.6 1.3 1.6 2.3 2.9 2.9l.7-.6c.3-.2.6-.3.9-.1l1.9 1.2c.3.3.3.7-.1 1-1 1-2.4 1.3-3.7.6a10.4 10.4 0 0 1-4.6-4.6c-.7-1.3-.4-2.7.7-3.8z" fill="#25d366"/></svg></i><div><small>WHATSAPP</small><b>+226 02 24 77 01</b></div></div>
+    <!-- I -->
+    <div class="e mo" id="iT1" style="top:200px;left:375px;font-weight:500;font-size:96px;color:#f4f1ec;letter-spacing:10px">TITAN GEL</div>
+    <div class="e mo gold" id="iT2" style="top:315px;left:375px;font-weight:700;font-size:70px;letter-spacing:22px">• GOLD •</div>
+    <div class="e price" id="iPrice" style="top:1395px;left:375px;padding:12px 44px 16px;border-width:5px"><span class="an" style="font-size:150px;color:#fff;text-shadow:0 6px 0 #7a0410">5 000</span><span class="an gold" style="font-size:80px">FCFA</span></div>
+    <div class="e" id="iTag" style="top:1580px;left:375px;text-align:center;font-family:Mont;font-weight:800;font-size:44px;color:#fff;line-height:1.25;letter-spacing:1px">Prends soin de ton intimité<br><span class="gold" style="font-size:52px;font-weight:900">&amp; booste ta confiance !</span></div>
+    <div class="si" id="iS1" style="top:470px"><div class="c"><svg width="62" height="62" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 4 6 7.2 6 10.5a6 6 0 0 1-12 0C6 10.2 9 7 12 3z"/></svg></div><b>Gel intime<br>masculin</b></div>
+    <div class="si" id="iS2" style="top:745px"><div class="c"><svg width="62" height="62" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg></div><b>Améliore les<br>sensations</b></div>
+    <div class="si" id="iS3" style="top:1020px"><div class="c"><svg width="62" height="62" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></div><b>Facile à<br>utiliser</b></div>
+    <div class="si" id="iS4" style="top:1295px"><div class="c"><svg width="70" height="62" viewBox="0 0 28 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"><path d="M2 6h14v11H2zM16 10h5l4 4v3h-9z"/><circle cx="7" cy="18.5" r="2.2" fill="#a30d22"/><circle cx="21" cy="18.5" r="2.2" fill="#a30d22"/></svg></div><b>Livraison<br>Burkina Faso</b></div>
+    <div class="e wa" id="iWa" style="top:1790px;padding:16px 44px 16px 20px"><i style="width:84px;height:84px"><svg width="52" height="52" viewBox="0 0 24 24"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5z" fill="#fff"/><path d="M8.6 7.2c.3-.4.7-.4 1-.1l1.2 1.9c.2.3.1.6-.1.9l-.6.7c.6 1.3 1.6 2.3 2.9 2.9l.7-.6c.3-.2.6-.3.9-.1l1.9 1.2c.3.3.3.7-.1 1-1 1-2.4 1.3-3.7.6a10.4 10.4 0 0 1-4.6-4.6c-.7-1.3-.4-2.7.7-3.8z" fill="#25d366"/></svg></i><div><small>COMMANDE SUR WHATSAPP</small><b style="font-size:70px">+226 02 24 77 01</b></div></div>
+  </div>
+  <div class="L" id="vig"></div>
+  <div class="L" id="grain"></div>
+  <div class="L" id="flash"></div>
+</div></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from './lib/RoomEnvironment.js';
+
+const W=1080,H=1920,FPS=30;
+// ---------- helpers ----------
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const P=(t,a,b)=>cl((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3), ei=x=>x*x*x, eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const expo=x=>x<=0?0:x>=1?1:1-Math.pow(2,-10*x);
+const spr=(dt,k=8,w=13)=>dt<=0?0:1-Math.exp(-k*dt)*Math.cos(w*dt);   // damped spring step, small overshoot
+const lerp=(a,b,k)=>a+(b-a)*k;
+const win=(t,a,b,fi=.12,fo=.12)=>Math.min(fi?P(t,a,a+fi):(t>=a?1:0), fo?1-P(t,b-fo,b):(t<b?1:0));
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const $=id=>document.getElementById(id);
+function S(id,o,x=0,y=0,s=1,r=0,blur=0){const el=typeof id==='string'?$(id):id;el.style.opacity=o<=0.001?0:o;
+  if(o<=0.001){el.style.visibility='hidden';return}el.style.visibility='inherit';
+  el.style.transform=`translate(-50%,-50%) translate(${x}px,${y}px) scale(${s}) rotate(${r}deg)`;el.style.filter=blur>0.05?`blur(${blur}px)`:'none'}
+// masked rise: element .m with inner span
+function R(id,t0,t,tout=1e9,dur=.45){const el=$(id),sp=el.firstElementChild;
+  const k=eo(P(t,t0,t0+dur)), ko=ei(P(t,tout,tout+.25));
+  const vis=t>=t0&&t<tout+.25;S(el,vis?1:0);if(!vis)return;
+  sp.style.transform=`translateY(${(1-k)*110 - ko*110}%) rotate(${(1-k)*4}deg)`;}
+function bgO(id,o){const el=$(id);el.style.opacity=o;el.style.visibility=o>0.001?'inherit':'hidden'}
+
+// ---------- canvas textures ----------
+function goldTiles(ctx,x0,y0,w,h,s,metal){
+  ctx.save();ctx.beginPath();ctx.rect(x0,y0,w,h);ctx.clip();
+  if(metal){ctx.fillStyle='#e6e6e6';ctx.fillRect(x0,y0,w,h);ctx.restore();return}
+  const c=['#f8e3a0','#cfa04a','#87601f'];
+  for(let row=-1;row*s*0.75<h+s;row++)for(let col=-1;col*s<w+s;col++){
+    const cx=x0+col*s+(row%2?s/2:0), cy=y0+row*s*0.75;
+    const f=(col0,pts)=>{ctx.fillStyle=col0;ctx.beginPath();ctx.moveTo(...pts[0]);for(const p of pts.slice(1))ctx.lineTo(...p);ctx.closePath();ctx.fill()};
+    f(c[0],[[cx,cy-s*.5],[cx+s*.5,cy-s*.25],[cx,cy],[cx-s*.5,cy-s*.25]]);
+    f(c[1],[[cx-s*.5,cy-s*.25],[cx,cy],[cx,cy+s*.5],[cx-s*.5,cy+s*.25]]);
+    f(c[2],[[cx+s*.5,cy-s*.25],[cx,cy],[cx,cy+s*.5],[cx+s*.5,cy+s*.25]]);
+  }
+  const g=ctx.createLinearGradient(x0,y0,x0+w*.6,y0+h);g.addColorStop(0,'rgba(255,240,200,.16)');g.addColorStop(.6,'rgba(255,255,255,0)');g.addColorStop(1,'rgba(50,25,0,.28)');
+  ctx.fillStyle=g;ctx.fillRect(x0,y0,w,h);ctx.restore();
+}
+function pyramid(ctx,cx,cy,w,lw,col){
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.lineJoin='miter';
+  for(let i=0;i<5;i++){const k=1-i*0.17, hw=w/2*k, hh=w*0.62*k, oy=i*w*0.05;
+    ctx.beginPath();ctx.moveTo(cx-hw,cy+oy);ctx.lineTo(cx,cy-hh+oy+ w*0.62*(1-k)*0.0);ctx.lineTo(cx+hw,cy+oy);ctx.stroke();}
+  ctx.restore();
+}
+function label(ctx,cx,y,scale,metal){
+  if(metal)return;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='#f1eee8';ctx.font=`500 ${96*scale}px Mont`;ctx.letterSpacing=`${8*scale}px`;ctx.fillText('TITAN GEL',cx,y);
+  ctx.fillStyle='#e2b75a';ctx.font=`700 ${64*scale}px Mont`;ctx.letterSpacing=`${22*scale}px`;ctx.fillText('• GOLD •',cx+11*scale,y+120*scale);
+}
+function makeTex(w,h,draw){
+  const mk=(metal)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');draw(x,metal);return c};
+  const map=new THREE.CanvasTexture(mk(false));map.colorSpace=THREE.SRGBColorSpace;map.anisotropy=8;
+  const met=new THREE.CanvasTexture(mk(true));
+  return {map,met};
+}
+const TUBE_GOLD=0.36;
+function drawTube(ctx,metal){
+  const w=2048,h=2048;
+  ctx.fillStyle=metal?'#000':'#0b0b0c';ctx.fillRect(0,0,w,h);
+  if(!metal){const g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,255,255,0.03)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,w,h)}
+  goldTiles(ctx,0,0,w,h*TUBE_GOLD,92,metal);
+  if(!metal){ctx.fillStyle='#6b4a14';ctx.fillRect(0,h*TUBE_GOLD-3,w,6)}
+  label(ctx,1024,h*0.47,1,metal);
+  if(!metal){pyramid(ctx,1024,h*0.80,330,9,'#d9ad55');
+    ctx.fillStyle='#ecebe7';ctx.font='500 52px Mont';ctx.letterSpacing='10px';ctx.textAlign='center';ctx.fillText('INTIMATE GEL',1029,h*0.885);}
+}
+function drawBoxFront(ctx,metal){
+  const w=768,h=2068;ctx.fillStyle=metal?'#000':'#0c0c0d';ctx.fillRect(0,0,w,h);
+  goldTiles(ctx,0,0,w,h*0.40,104,metal);
+  if(!metal){ctx.fillStyle='#6b4a14';ctx.fillRect(0,h*0.40-3,w,6);
+    label(ctx,384,h*0.475,.82,false);pyramid(ctx,384,h*0.80,250,8,'#d9ad55');
+    ctx.fillStyle='#ecebe7';ctx.font='500 40px Mont';ctx.letterSpacing='8px';ctx.textAlign='center';ctx.fillText('INTIMATE GEL',388,h*0.88);}
+}
+function drawBoxSide(ctx,metal){
+  const w=444,h=2068;ctx.fillStyle=metal?'#000':'#0c0c0d';ctx.fillRect(0,0,w,h);
+  goldTiles(ctx,0,0,w,h*0.40,104,metal);
+  if(!metal){ctx.fillStyle='#6b4a14';ctx.fillRect(0,h*0.40-3,w,6);
+    const rnd=mulberry32(7);ctx.fillStyle='rgba(200,200,200,.55)';
+    for(let blk=0;blk<2;blk++){const y0=h*0.44+blk*h*0.27;ctx.fillRect(40,y0,60,14);
+      for(let i=0;i<14;i++){ctx.fillRect(40,y0+34+i*28,w-80-rnd()*120,7)}}}
+}
+function drawTop(ctx,metal){goldTiles(ctx,0,0,512,512,104,metal)}
+
+// ---------- three.js ----------
+const renderer=new THREE.WebGLRenderer({canvas:$('gl'),alpha:true,antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(1);renderer.setSize(W,H,false);renderer.setClearColor(0x000000,0);
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.outputColorSpace=THREE.SRGBColorSpace;
+const scene=new THREE.Scene();
+const pmrem=new THREE.PMREMGenerator(renderer);
+scene.environment=pmrem.fromScene(new RoomEnvironment(),0.04).texture;
+scene.environmentIntensity=0.9;
+const camera=new THREE.PerspectiveCamera(30,W/H,0.1,100);camera.position.set(0,0,10);camera.lookAt(0,0,0);
+const key=new THREE.DirectionalLight(0xfff1dc,2.2);key.position.set(3,4,6);scene.add(key);
+const rimR=new THREE.DirectionalLight(0xff2a2a,3.2);rimR.position.set(-6,2,-3);scene.add(rimR);
+const rimG=new THREE.DirectionalLight(0xffc86a,2.4);rimG.position.set(6,-1,-2);scene.add(rimG);
+scene.add(new THREE.AmbientLight(0xffffff,0.15));
+
+function tubeGeometry(){
+  const segU=128,segV=90,Ht=3.0,Rr=0.5;const pos=[],uv=[],idx=[];
+  for(let j=0;j<=segV;j++){const v=j/segV;const y=-Ht/2+v*Ht;
+    const a=Rr*(1+0.38*Math.pow(v,1.25)), b=Rr*Math.max(0.03,1-0.97*Math.pow(v,1.3));
+    for(let i=0;i<=segU;i++){const u=i/segU, th=(u-0.5)*Math.PI*2;pos.push(a*Math.sin(th),y,b*Math.cos(th));uv.push(u,v)}}
+  for(let j=0;j<segV;j++)for(let i=0;i<segU;i++){const a=j*(segU+1)+i,b=a+1,c=a+segU+1,d=c+1;idx.push(a,b,d,a,d,c)}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;
+}
+function product(){
+  const tube=new THREE.Group();
+  const tt=makeTex(2048,2048,drawTube);
+  const tm=new THREE.MeshPhysicalMaterial({map:tt.map,metalnessMap:tt.met,metalness:1,roughness:0.3,clearcoat:1,clearcoatRoughness:0.15});
+  tube.add(new THREE.Mesh(tubeGeometry(),tm));
+  // crimp seal
+  const topA=0.5*1.38;
+  const ct=makeTex(512,128,(c,m)=>{goldTiles(c,0,0,512,128,64,m);if(!m){c.fillStyle='rgba(0,0,0,.25)';for(let x=0;x<512;x+=8)c.fillRect(x,0,3,128)}});
+  const crimp=new THREE.Mesh(new THREE.BoxGeometry(topA*2+0.02,0.16,0.07),new THREE.MeshPhysicalMaterial({map:ct.map,metalnessMap:ct.met,metalness:1,roughness:.32}));
+  crimp.position.y=1.5+0.07;tube.add(crimp);
+  // cap
+  const prof=[[0.001,-2.14],[0.47,-2.14],[0.53,-2.11],[0.555,-2.05],[0.555,-1.62],[0.54,-1.565],[0.505,-1.52],[0.5,-1.49]].map(p=>new THREE.Vector2(p[0],p[1]));
+  const capM=new THREE.MeshPhysicalMaterial({color:0x0a0a0b,roughness:.22,metalness:0,clearcoat:1,clearcoatRoughness:.1,side:THREE.DoubleSide});
+  tube.add(new THREE.Mesh(new THREE.LatheGeometry(prof,96),capM));
+  const groove=new THREE.Mesh(new THREE.TorusGeometry(0.556,0.008,8,96),new THREE.MeshBasicMaterial({color:0x000000}));groove.rotation.x=Math.PI/2;groove.position.y=-1.75;tube.add(groove);
+  // gel drop (child of tube, under the cap)
+  const drop=new THREE.Mesh(new THREE.SphereGeometry(1,48,32),new THREE.MeshPhysicalMaterial({color:0xffe2a0,roughness:0.03,metalness:0,transmission:0,transparent:true,opacity:.8,clearcoat:1,ior:1.4,specularIntensity:1}));
+  drop.visible=false;scene.add(drop);
+  tube.position.y=0.3;  // optical centre (cap pulls mass down)
+  const tubeRoot=new THREE.Group();tubeRoot.add(tube);scene.add(tubeRoot);
+  // box
+  const bf=makeTex(768,2068,drawBoxFront), bs=makeTex(444,2068,drawBoxSide), bt=makeTex(512,512,drawTop);
+  const mm=(t)=>new THREE.MeshPhysicalMaterial({map:t.map,metalnessMap:t.met,metalness:1,roughness:.38,clearcoat:.6,clearcoatRoughness:.3});
+  const bmats=[mm(bs),mm(bs),mm(bt),new THREE.MeshPhysicalMaterial({color:0x0c0c0d,roughness:.4}),mm(bf),mm(bf)];
+  const box=new THREE.Mesh(new THREE.BoxGeometry(1.3,3.5,0.75),bmats);
+  const boxRoot=new THREE.Group();boxRoot.add(box);scene.add(boxRoot);
+  return {tubeRoot,boxRoot,drop};
+}
+const PR=product();
+
+function place(root,st){
+  if(!st){root.visible=false;return}
+  root.visible=true;root.position.set(st.x||0,st.y||0,st.z||0);root.rotation.set(st.rx||0,st.ry||0,st.rz||0);root.scale.setScalar(st.s||1);
+}
+
+// ---------- 2D particles ----------
+const back=$('back').getContext('2d'), front=$('front').getContext('2d');
+const rnd=mulberry32(1234);
+const DUST=Array.from({length:150},()=>({x:rnd()*W,y:rnd()*H,r:1.5+rnd()*5,sp:20+rnd()*70,ph:rnd()*6.28,dr:rnd()*30,z:rnd()}));
+const BURSTS=[{t:0.92,x:540,y:800,n:140,sp:1500},{t:6.86,x:540,y:820,n:160,sp:1300},{t:18.96,x:540,y:1450,n:170,sp:1500},{t:28.6,x:760,y:1440,n:90,sp:900},{t:31.34,x:380,y:900,n:150,sp:1300}];
+BURSTS.forEach((b,i)=>{const r=mulberry32(99+i);b.p=Array.from({length:b.n},()=>{const a=r()*Math.PI*2,s=b.sp*(0.25+r()*0.75);return{vx:Math.cos(a)*s,vy:Math.sin(a)*s-300,r:2+r()*6,l:0.6+r()*0.9,tw:r()*6}})});
+function glow(ctx,x,y,r,a,col='255,210,120'){const g=ctx.createRadialGradient(x,y,0,x,y,r*3);g.addColorStop(0,`rgba(255,250,230,${a})`);g.addColorStop(.25,`rgba(${col},${a*.8})`);g.addColorStop(1,`rgba(${col},0)`);ctx.fillStyle=g;ctx.fillRect(x-r*3,y-r*3,r*6,r*6)}
+function particles(t,dustAmt){
+  back.clearRect(0,0,W,H);front.clearRect(0,0,W,H);
+  back.globalCompositeOperation='lighter';front.globalCompositeOperation='lighter';
+  if(dustAmt>0)for(const d of DUST){const y=((d.y-d.sp*t)%H+H)%H, x=d.x+Math.sin(t*0.7+d.ph)*d.dr;const a=dustAmt*(0.25+0.45*(0.5+0.5*Math.sin(t*3+d.ph)));
+    glow(d.z>0.6?front:back,x,y,d.r*(d.z>0.6?1.3:0.8),a)}
+  for(const b of BURSTS){const age=t-b.t;if(age<0||age>1.6)continue;
+    for(const p of b.p){if(age>p.l)continue;const k=age;const drag=(1-Math.exp(-2.6*k))/2.6;
+      const x=b.x+p.vx*drag, y=b.y+p.vy*drag+380*k*k;const a=(1-age/p.l)*(0.6+0.4*Math.sin(age*30+p.tw));glow(front,x,y,p.r,a)}}
+  // shockwave ring at bursts
+  for(const b of BURSTS){const age=t-b.t;if(age<0||age>0.5)continue;const r=60+age*1500;front.strokeStyle=`rgba(255,220,150,${0.55*(1-age/0.5)})`;front.lineWidth=14*(1-age/0.5)+2;front.beginPath();front.arc(b.x,b.y,r,0,Math.PI*2);front.stroke()}
+}
+
+// ---------- grain ----------
+const GR=[];{const r=mulberry32(55);for(let k=0;k<4;k++){const c=document.createElement('canvas');c.width=540;c.height=960;const x=c.getContext('2d');const im=x.createImageData(540,960);for(let i=0;i<im.data.length;i+=4){const v=r()*255;im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255}x.putImageData(im,0,0);GR.push(`url(${c.toDataURL('image/jpeg',.7)})`)}}
+
+// ---------- static SVG decor ----------
+{ // zigzag strip for end card
+  const z=$('zz');let d='M330 0 L40 0';const n=48;for(let i=0;i<=n;i++){const y=i*1920/n;d+=` L${i%2?20:44} ${y}`}d+=' L330 1920 Z';
+  z.innerHTML=`<path d="${d}" fill="#f6efe4"/>`;
+  z.style.position='absolute';z.style.right='0';z.style.left='auto';z.style.top='0';
+}
+{ // road for delivery scene
+  const r=$('road');let s='';s+=`<path d="M-50 1130 C 300 1060, 700 1200, 1130 1110" stroke="#1a0104" stroke-width="150" fill="none"/>`;
+  s+=`<path id="dash" d="M-50 1130 C 300 1060, 700 1200, 1130 1110" stroke="#f2c45e" stroke-width="10" stroke-dasharray="50 40" fill="none"/>`;
+  r.innerHTML=s;
+}
+
+const CUTS=[1.78,5.68,8.2,13.5,16.8,17.96,22.0,26.2,31.2];
+
+// ---------- the timeline ----------
+window.seek=async function(t){
+  // backgrounds
+  bgO('bgA',win(t,-1,1.78,0,0));
+  bgO('bgB',win(t,1.78,5.68,0,0));
+  bgO('bgC',win(t,5.68,8.2,0,0));
+  bgO('bgD',win(t,8.2,13.5,0,0));
+  bgO('bgE',win(t,13.5,16.8,0,0));
+  bgO('bgF1',win(t,16.8,17.96,0,0));
+  bgO('bgF2',win(t,17.96,22.0,0,0));
+  bgO('bgG',win(t,22.0,26.2,0,0));
+  bgO('bgH',win(t,26.2,31.2,0,0));
+  bgO('bgI',win(t,31.2,99,0,0));
+  const raysO=Math.max(win(t,-1,1.78,0,0)*0.9, win(t,17.96,22,0,0)*0.9, win(t,26.2,31.2,0,0)*0.6, win(t,5.68,8.2,0,0)*0.35*P(t,6.8,7.2));
+  bgO('rays',raysO);$('rays').style.transform=`rotate(${t*9}deg) scale(1.9)`;
+  // B band slides
+  $('bBand').style.transform=`translateX(${(1-eo(P(t,1.78,2.4)))*400 + Math.sin(t*0.8)*20}px)`;
+  // D smoke
+  { let s='';const r=mulberry32(3);for(let i=0;i<6;i++){const x=200+r()*700+Math.sin(t*0.35+i)*160, y=300+r()*1400+Math.cos(t*0.3+i*2)*140, rr=300+r()*250;
+      s+=`radial-gradient(circle ${rr}px at ${x}px ${y}px, rgba(${i%2?'190,30,40':'120,10,20'},.55), transparent 70%),`;}
+    $('smk').style.background=s.slice(0,-1);}
+  // E red diagonal wipe
+  $('eRed').style.clipPath=`polygon(${lerp(100,38,eo(P(t,13.5,13.9)))}% 0,100% 0,100% 100%,${lerp(100,62,eo(P(t,13.5,13.9)))}% 100%)`;
+  // road dash scroll
+  $('dash').style.strokeDashoffset=-t*900*(t<24.0?1:Math.max(0,1-(t-24)*0.8));
+
+  // ---------- A: hook ----------
+  {const kS=spr(t-0.0,9,12),kG=spr(t-0.72,11,15),kB=spr(t-0.9,11,15),o=win(t,-1,1.78,0,0.12);
+    S('aScript',o*cl(kS*1.2),0,(1-cl(kS))*60,1,0,(1-cl(kS))*8);
+    S('aGros',o*cl((t-0.72)*8),0,0,lerp(2.4,1,kG),(1-kG)*-6,(1-cl(kG))*10);
+    S('aBang',o*cl((t-0.9)*8),0,0,lerp(2.4,1,kB),(1-kB)*5,(1-cl(kB))*10);}
+  // ---------- B ----------
+  {const o=win(t,1.78,5.68,0,.15);
+    S('bLine1',o*cl((t-2.0)*5)*(1-P(t,4.0,4.15)),0,(1-eo(P(t,2.0,2.4)))*40);
+    R('bInt',2.9,t,4.0);
+    S('bLine2',o*cl((t-4.1)*5),0,(1-eo(P(t,4.1,4.45)))*40);
+    R('bConf',4.45,t,5.55);}
+  // ---------- C ----------
+  {const o=win(t,5.68,8.2,0,.15);
+    S('cDisc',o*cl((t-6.25)*4),0,0,1,0,(1-P(t,6.25,6.6))*10);$('cDisc').style.letterSpacing=`${lerp(60,22,eo(P(t,6.25,7.2)))}px`;
+    const k=spr(t-6.86,9,13);S('cT1',o*cl((t-6.86)*6),0,(1-k)*80,lerp(.8,1,k));
+    const k2=spr(t-7.45,9,13);S('cT2',o*cl((t-7.45)*6),0,(1-k2)*60,lerp(.6,1,k2));}
+  // ---------- D ----------
+  {const o=win(t,8.2,13.5,0,.15);
+    const kp=spr(t-8.32,9,13);S('dPill',o*cl((t-8.32)*6),0,(1-kp)*-50,lerp(.6,1,kp));
+    R('dL1',9.68,t,11.65);R('dL2',10.36,t,11.7);R('dL3',11.74,t,13.3);R('dL4',12.2,t,13.32);}
+  // ---------- E ----------
+  {const o=win(t,13.5,16.8,0,.15);
+    [['eC1',13.74],['eC2',15.02],['eC3',15.48]].forEach(([id,t0])=>{const k=spr(t-t0,8,12);S(id,o*cl((t-t0)*6),(1-k)*900,0,1,(1-k)*-4)});}
+  // ---------- F ----------
+  {const o1=win(t,16.8,17.96,0,0);
+    const k1=spr(t-16.94,10,14),k2=spr(t-17.34,10,14);
+    S('fEt',o1*cl((t-16.94)*8),Math.sin(t*60)*3*P(t,17.3,17.9),0,lerp(1.8,1,k1));
+    S('fQuoi',o1*cl((t-17.34)*8),0,0,lerp(2.2,1,k2)*(1+0.04*Math.sin(t*14)),(1-k2)*-10+Math.sin(t*9)*2);
+    const o2=win(t,17.96,22,0,.15);
+    S('fDisp',o2*cl((t-18.16)*5),0,(1-eo(P(t,18.16,18.5)))*40);
+    const kp=spr(t-18.96,9,14),pul=Math.exp(-6*Math.max(0,t-20.5))*(t>20.5?1:0);
+    S('fPrice',o2*cl((t-18.96)*10),0,0,lerp(2.6,1,kp)*(1+0.12*pul*Math.cos((t-20.5)*20)),(1-kp)*-8);}
+  // ---------- G ----------
+  {const o=win(t,22,26.2,0,.15);
+    const kt=eo(P(t,22.2,23.4)), park=t>23.4?Math.sin((t-23.4)*18)*Math.exp(-(t-23.4)*5)*6:0;
+    S('gTruck',o,lerp(-1000,0,kt)+park,Math.sin(t*28)*2*(t<23.4?1:0.3),1,park*0.3);
+    S('gL1',o*cl((t-22.98)*5),0,(1-eo(P(t,22.98,23.35)))*-40);
+    R('gL2',24.44,t,25.95);R('gL3',25.2,t,25.95);
+    const kf=spr(t-25.5,9,12);S('gFlag',o*cl((t-25.5)*6),0,0,lerp(0,1,cl(kf,0,1.2)));
+    S('gFrais',o*cl((t-25.7)*5),0,(1-eo(P(t,25.7,26)))*20);}
+  // ---------- H ----------
+  {const o=win(t,26.2,31.2,0,.15);
+    const kn=spr(t-26.4,9,13);S('hNe',o*cl((t-26.4)*6)*(1-P(t,27.85,27.96)),0,0,lerp(1.6,1,kn));
+    const kc=spr(t-27.96,10,14);S('hCmd',o*cl((t-27.96)*8),0,0,lerp(2,1,kc));
+    const kb=spr(t-28.1,8,12),press=t>28.6?Math.exp(-(t-28.6)*8)*Math.sin((t-28.6)*Math.PI*4):0;
+    S('hBtn',o*cl((t-28.1)*6),0,(1-kb)*200 + press*10,1-0.06*Math.max(0,press)*1.5+(press<0?0:0));
+    const ta=t-28.4;S('hTap',o*(ta>0&&ta<0.8?(ta<0.2?ta/0.2:1-(ta-0.2)/0.6):0),0,0,ta<0.2?1:1+(ta-0.2)*2.2);
+    const kw=spr(t-29.7,8,12);S('hWa',o*cl((t-29.7)*6),0,(1-kw)*120,lerp(.7,1,kw));}
+  // ---------- I ----------
+  {const o=cl((t-31.2)/0.1);
+    const k1=spr(t-31.34,9,13);S('iT1',o*cl((t-31.34)*6),0,(1-k1)*-60);
+    const k2=spr(t-32.5,9,13);S('iT2',o*cl((t-32.5)*6),0,0,lerp(.5,1,k2));
+    ['iS1','iS2','iS3','iS4'].forEach((id,i)=>{const t0=31.5+i*0.18,k=spr(t-t0,8,12);S(id,o*cl((t-t0)*6),(1-k)*300,0)});
+    const kp=spr(t-32.9,9,14);S('iPrice',o*cl((t-32.9)*8),0,0,lerp(1.8,1,kp)*(1+0.015*Math.sin(t*4)));
+    const kt=spr(t-33.72,8,12);S('iTag',o*cl((t-33.72)*5),0,(1-kt)*50);
+    const kw=spr(t-34.4,8,12);S('iWa',o*cl((t-34.4)*6),0,(1-kw)*120,1+0.02*Math.max(0,Math.sin((t-34.4)*5)));}
+
+  // ---------- 3D poses ----------
+  let T=null,B=null,drop=null,dust=0.5;
+  if(t<1.78){const k=eo(P(t,0.1,1.0));T={x:lerp(2.2,0,k),y:lerp(-6.5,-1.55,k)+Math.sin(t*2)*0.03,s:.55,rz:lerp(1.2,0.22,k),ry:lerp(-7,0,expo(P(t,0.1,1.4)))+0.25*Math.sin(t*1.5),rx:0.12};dust=.7}
+  else if(t<5.68){const k=eo(P(t,1.78,2.5));T={x:0,y:lerp(-1.2,0.45,k)+Math.sin(t*1.6)*0.05,s:.62,rz:-0.18+0.04*Math.sin(t),ry:-1.1+0.42*(t-1.78),rx:0.1};dust=.8}
+  else if(t<8.2){const k=eo(P(t,5.68,6.3));T={x:0,y:lerp(-2.5,0.45,k)+Math.sin(t*1.4)*0.04,s:.66*lerp(.6,1,k),ry:-Math.PI*5*(1-expo(P(t,5.68,7.0)))+0.18*Math.sin((t-7)*1.6)*P(t,7,7.6),rx:0.06};dust=.4+.5*P(t,6.8,7)}
+  else if(t<13.5){const kz=eio(P(t,10.7,11.5));
+    const macro={x:0.25,y:lerp(-2.4,0.7,eio(P(t,8.2,10.9))),s:1.75,ry:lerp(-0.55,0.3,P(t,8.2,10.9)),rz:0.12,rx:0.05};
+    const wide={x:0,y:0.95+Math.sin(t*1.3)*0.03,s:.6,ry:0.25*Math.sin(t*0.9),rz:0,rx:0.05};
+    T={};for(const kk of ['x','y','s','ry','rz','rx'])T[kk]=lerp(macro[kk],wide[kk],kz);
+    if(t>11.6){const dt=t-11.6;const grow=eo(P(t,11.6,12.4)), fall=Math.max(0,t-12.45);
+      const capY=T.y+(0.3-2.14)*T.s; drop={x:T.x,y:capY-0.12*grow-2.6*fall*fall-0.4*fall,r:0.13*grow,sy:1+0.35*grow+0.4*Math.min(fall*3,1)};}
+    dust=.45}
+  else if(t<16.8){const k=spr(t-13.5,7,10);T={x:0,y:lerp(4,1.55,cl(k,0,1.1))+Math.sin(t*1.7)*0.04,s:.36,rz:0.18,ry:0.9*(t-13.5),rx:0.1};dust=.3}
+  else if(t<17.96){T=null;dust=.25}
+  else if(t<22){const k=spr(t-17.96,7,10),kb=spr(t-18.1,7,10);
+    T={x:-0.55,y:lerp(-5,0.55,cl(k,0,1.1))+Math.sin(t*1.5)*0.04,s:.55,rz:-0.08,ry:0.35*Math.sin(t*0.9)-0.1,rx:0.06,z:0.6};
+    B={x:0.68,y:lerp(-5,0.78,cl(kb,0,1.1))+Math.sin(t*1.2+1)*0.03,s:.55,ry:-0.5+0.12*Math.sin(t*0.7),rx:0.05,z:-0.4};dust=.7}
+  else if(t<26.2){T=null;dust=.35}
+  else if(t<31.2){const k=spr(t-26.2,7,10);
+    T={x:-0.5,y:lerp(-5,0.3,cl(k,0,1.1))+Math.sin(t*1.5)*0.04,s:.6,rz:-0.06,ry:-0.6+0.3*(t-26.2)%(Math.PI*2)*0+0.45*Math.sin((t-26.2)*0.9),rx:0.06,z:0.6};
+    B={x:0.62,y:lerp(-5,0.48,cl(spr(t-26.35,7,10),0,1.1))+Math.sin(t*1.2)*0.03,s:.6,ry:-0.45+0.15*Math.sin(t*0.7),rx:0.05,z:-0.4};dust=.6}
+  else {const k=spr(t-31.2,7,10);
+    T={x:-0.88,y:lerp(-4,0.12,cl(k,0,1.1))+Math.sin(t*1.4)*0.03,s:.46,rz:-0.05,ry:0.3*Math.sin((t-31.2)*0.8),rx:0.05,z:0.5};
+    B={x:-0.08,y:lerp(-4,0.3,cl(spr(t-31.35,7,10),0,1.1))+Math.sin(t*1.1)*0.025,s:.46,ry:-0.42+0.1*Math.sin(t*0.6),rx:0.05,z:-0.5};dust=.4}
+  place(PR.tubeRoot,T);place(PR.boxRoot,B);
+  if(drop&&drop.r>0.002){PR.drop.visible=true;PR.drop.position.set(drop.x,drop.y,0.3);PR.drop.scale.set(drop.r,drop.r*drop.sy,drop.r)}else PR.drop.visible=false;
+  renderer.render(scene,camera);
+
+  particles(t,dust);
+
+  // ---------- camera punch / flash / grain ----------
+  let punch=0,shake=0,flash=0;
+  for(const c of CUTS){const a=t-c;if(a>=0&&a<0.6){punch+=0.06*Math.exp(-a*9);flash+=0.55*Math.exp(-a*14)}}
+  for(const s of [0.9,6.86,18.96,27.96]){const a=t-s;if(a>=0&&a<0.5){shake+=14*Math.exp(-a*10);punch+=0.03*Math.exp(-a*8)}}
+  const sx=Math.sin(t*97)*shake,sy=Math.cos(t*83)*shake;
+  $('cam').style.transform=`translate(${sx}px,${sy}px) scale(${1+punch+0.01*Math.max(shake,0)/14})`;
+  $('flash').style.opacity=cl(flash,0,0.8);
+  $('grain').style.backgroundImage=GR[Math.floor(t*FPS)%4];
+};
+await document.fonts.ready;
+// rebuild textures after fonts are available (canvas text needs the font loaded)
+await Promise.all([...document.fonts].map(f=>f.load()));
+{const n=product();scene.remove(PR.tubeRoot);scene.remove(PR.boxRoot);scene.remove(PR.drop);Object.assign(PR,n);}
+await window.seek(0);
+window.ready=true;
+// preview: ?play
+if(location.search.includes('play')){const a=new Audio('vo.mp3');let t0=null;document.body.onclick=()=>{a.currentTime=0;a.play();t0=performance.now()};
+  const loop=()=>{if(t0!==null){const t=(performance.now()-t0)/1000;window.seek(Math.min(t,36.96))}requestAnimationFrame(loop)};loop();}
+</script>
+</body></html>
