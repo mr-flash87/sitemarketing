@@ -17,6 +17,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.window.OnBackInvokedDispatcher;
+import android.view.WindowInsets;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
@@ -39,11 +41,22 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= 21) {
+        FrameLayout root = new FrameLayout(this);
+        // Android 15+ affiche l'app « bord à bord » : on laisse la place des barres
+        // système, colorées en orange AfriShop.
+        root.setBackgroundColor(0xFFFF8C42);
+        if (Build.VERSION.SDK_INT >= 30) {
+            root.setOnApplyWindowInsetsListener((v, insets) -> {
+                android.graphics.Insets i = insets.getInsets(
+                        WindowInsets.Type.systemBars() | WindowInsets.Type.ime()
+                                | WindowInsets.Type.displayCutout());
+                v.setPadding(i.left, i.top, i.right, i.bottom);
+                return WindowInsets.CONSUMED;
+            });
+        } else {
+            root.setFitsSystemWindows(true);
             getWindow().setStatusBarColor(0xFFFF8C42);
         }
-
-        FrameLayout root = new FrameLayout(this);
         webView = new WebView(this);
         progress = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         progress.setMax(100);
@@ -54,7 +67,6 @@ public class MainActivity extends Activity {
         WebSettings s = webView.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
-        s.setDatabaseEnabled(true);
         s.setLoadWithOverviewMode(true);
         s.setUseWideViewPort(true);
         s.setMediaPlaybackRequiresUserGesture(false);
@@ -74,6 +86,12 @@ public class MainActivity extends Activity {
                 openExternal(url);
             }
         });
+
+        // Geste / bouton retour (obligatoire avec Android 13+ et la cible API 36)
+        if (Build.VERSION.SDK_INT >= 33) {
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    OnBackInvokedDispatcher.PRIORITY_DEFAULT, this::handleBack);
+        }
 
         if (savedInstanceState != null) {
             webView.restoreState(savedInstanceState);
@@ -173,11 +191,6 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void onReceivedError(WebView view, int code, String desc, String failingUrl) {
-            if (failingUrl != null && failingUrl.equals(view.getUrl())) showOffline();
-        }
-
-        @Override
         public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError err) {
             if (req.isForMainFrame()) showOffline();
         }
@@ -241,15 +254,20 @@ public class MainActivity extends Activity {
         CookieManager.getInstance().flush();
     }
 
-    @Override
-    public void onBackPressed() {
+    private void handleBack() {
         if (showingError) {
             showingError = false;
             webView.loadUrl(HOME);
         } else if (webView.canGoBack()) {
             webView.goBack();
         } else {
-            super.onBackPressed();
+            finish();
         }
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onBackPressed() {
+        handleBack(); // Android 12 et antérieur
     }
 }
