@@ -1,0 +1,6 @@
+# Généré par install.php – contient les mots de passe MySQL : ne jamais publier
+includes/config.php
+includes/install.lock
+# Photos envoyées depuis l'admin
+uploads/products/*
+!uploads/products/.gitkeep
